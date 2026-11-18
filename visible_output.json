@@ -1,0 +1,245 @@
+{
+  "as_of_date": "2026-11-18",
+  "account": "Meridian Foundation Reserve ($100M)",
+  "student": "Elliot",
+  "course": "FIN 43900 (Purdue University)",
+  "nominal_return_objective_pct": 6.5,
+  "cpi_baseline_pct": 2.5,
+  "real_growth_target_pct": 4.0,
+  "reserve_liquidity_floor_pct": 3.0,
+  "sleeves": [
+    {
+      "name": "Treasury bills",
+      "expected_return": 0.035,
+      "volatility": 0.005,
+      "reserve_eligible": true,
+      "expense_ratio": 0.0,
+      "redemption_days": 1
+    },
+    {
+      "name": "Treasury 10-year note",
+      "expected_return": 0.043,
+      "volatility": 0.07,
+      "reserve_eligible": true,
+      "expense_ratio": 0.0,
+      "redemption_days": 1
+    },
+    {
+      "name": "Investment-grade bond fund",
+      "expected_return": 0.05,
+      "volatility": 0.06,
+      "reserve_eligible": false,
+      "expense_ratio": 0.0004,
+      "redemption_days": 3
+    },
+    {
+      "name": "Global equity index fund",
+      "expected_return": 0.08,
+      "volatility": 0.16,
+      "reserve_eligible": false,
+      "expense_ratio": 0.0007,
+      "redemption_days": 2
+    }
+  ],
+  "correlation_matrix": [
+    [
+      1.0,
+      0.1,
+      0.05,
+      0.0
+    ],
+    [
+      0.1,
+      1.0,
+      0.8,
+      -0.1
+    ],
+    [
+      0.05,
+      0.8,
+      1.0,
+      0.25
+    ],
+    [
+      0.0,
+      -0.1,
+      0.25,
+      1.0
+    ]
+  ],
+  "baselines": {
+    "equal_weight": {
+      "name": "Equal Weight",
+      "weights": [
+        0.25,
+        0.25,
+        0.25,
+        0.25
+      ],
+      "weights_pct": [
+        25.0,
+        25.0,
+        25.0,
+        25.0
+      ],
+      "expected_return": 0.052000000000000005,
+      "expected_return_pct": 5.2,
+      "gross_expected_return": 0.052000000000000005,
+      "gross_expected_return_pct": 5.2,
+      "fee_drag": 0.000275,
+      "fee_drag_bps": 2.8,
+      "net_expected_return": 0.05172500000000001,
+      "net_expected_return_pct": 5.17,
+      "volatility": 0.05214463059606425,
+      "volatility_pct": 5.21,
+      "reserve_weight": 0.5,
+      "reserve_weight_pct": 50.0,
+      "five_day_liquidity_pct": 100.0,
+      "meets_gross_objective": false,
+      "meets_net_objective": false,
+      "meets_reserve_floor": true,
+      "hard_mandate_pass": true,
+      "fails_count": 0,
+      "failure_reasons": []
+    },
+    "benchmark_60_40": {
+      "name": "Benchmark (60/40)",
+      "weights": [
+        0.0,
+        0.0,
+        0.4,
+        0.6
+      ],
+      "weights_pct": [
+        0.0,
+        0.0,
+        40.0,
+        60.0
+      ],
+      "expected_return": 0.068,
+      "expected_return_pct": 6.8,
+      "gross_expected_return": 0.068,
+      "gross_expected_return_pct": 6.8,
+      "fee_drag": 0.00058,
+      "fee_drag_bps": 5.8,
+      "net_expected_return": 0.06742000000000001,
+      "net_expected_return_pct": 6.74,
+      "volatility": 0.10461357464497617,
+      "volatility_pct": 10.46,
+      "reserve_weight": 0.0,
+      "reserve_weight_pct": 0.0,
+      "five_day_liquidity_pct": 100.0,
+      "meets_gross_objective": true,
+      "meets_net_objective": true,
+      "meets_reserve_floor": false,
+      "hard_mandate_pass": false,
+      "fails_count": 1,
+      "failure_reasons": [
+        "Reserve allocation 0.0% < 3.0% floor"
+      ]
+    },
+    "inverse_volatility": {
+      "name": "Inverse Volatility",
+      "weights": [
+        0.8431618569636136,
+        0.06022584692597239,
+        0.07026348808030113,
+        0.026348808030112924
+      ],
+      "weights_pct": [
+        84.32,
+        6.02,
+        7.03,
+        2.63
+      ],
+      "expected_return": 0.03772145545796738,
+      "expected_return_pct": 3.77,
+      "gross_expected_return": 0.03772145545796738,
+      "gross_expected_return_pct": 3.77,
+      "fee_drag": 4.65495608531995e-05,
+      "fee_drag_bps": 0.5,
+      "net_expected_return": 0.03767490589711418,
+      "net_expected_return_pct": 3.77,
+      "volatility": 0.010497280464050726,
+      "volatility_pct": 1.05,
+      "reserve_weight": 0.903387703889586,
+      "reserve_weight_pct": 90.34,
+      "five_day_liquidity_pct": 100.0,
+      "meets_gross_objective": false,
+      "meets_net_objective": false,
+      "meets_reserve_floor": true,
+      "hard_mandate_pass": true,
+      "fails_count": 0,
+      "failure_reasons": []
+    }
+  },
+  "constrained_optimal": {
+    "feasible": true,
+    "name": "Constrained Optimized Portfolio",
+    "weights": [
+      0.0,
+      0.2,
+      0.25,
+      0.55
+    ],
+    "weights_pct": [
+      0.0,
+      20.0,
+      25.0,
+      55.0
+    ],
+    "expected_return": 0.0651,
+    "expected_return_pct": 6.51,
+    "gross_expected_return": 0.0651,
+    "gross_expected_return_pct": 6.51,
+    "fee_drag": 0.000485,
+    "fee_drag_bps": 4.9,
+    "net_expected_return": 0.064615,
+    "net_expected_return_pct": 6.46,
+    "volatility": 0.0944171594573783,
+    "volatility_pct": 9.44,
+    "reserve_weight": 0.2,
+    "reserve_weight_pct": 20.0,
+    "five_day_liquidity_pct": 100.0,
+    "total_evaluated": 1771,
+    "qualifying_count": 142,
+    "message": "Successfully identified lowest-risk qualifying portfolio among 142 candidates."
+  },
+  "known_benchmark_tests": {
+    "Test_A_Base": {
+      "passed": true,
+      "weights_pct": [
+        0.0,
+        20.0,
+        25.0,
+        55.0
+      ],
+      "return_pct": 6.51,
+      "volatility_pct": 9.44
+    },
+    "Test_B_Equity_Shock": {
+      "passed": true,
+      "weights_pct": [
+        0.0,
+        10.0,
+        10.0,
+        80.0
+      ],
+      "return_pct": 6.53,
+      "volatility_pct": 12.94,
+      "weight_shift_pp": 25.0
+    },
+    "Test_C_Correlation_Shock": {
+      "passed": true,
+      "weights_pct": [
+        0.0,
+        40.0,
+        0.0,
+        60.0
+      ],
+      "return_pct": 6.52,
+      "volatility_pct": 9.73
+    }
+  },
+  "reproducibility_status": "VERIFIED_100_PERCENT"
+}

@@ -61,10 +61,14 @@ All core calculations are independently tested via [`run_tests.py`](../run_tests
 - **Input Being Changed:** Global Equity Expected Return (`expected_return` for Sleeve 4: Global Equity Index Fund)
 - **Original Value (Baseline):** `8.00%` ($0.0800$)
 - **New Value (Stress Test):** `7.50%` ($0.0750$)
-- **Prediction Classification:** General Fiduciary & Qualitative Prediction (not a quantitative prediction for a specific scenario)
 
-- **Elliot's Independent AI-Off Prediction (Verbatim):**
-  > "I predict that when portfolio inputs change, the optimal portfolio weights will adjust based on the relationship between risk and return. If expected returns increase, I expect the portfolio to allocate more capital to those assets. If volatility increases, I expect the allocation to riskier assets to decrease. If liquidity decreases, I expect the investment to become less attractive because it will be harder to sell without additional costs. Overall, I predict that the investment decision will favor assets that provide higher expected returns with manageable risk and sufficient liquidity."
+#### 1. Elliot's General Qualitative Prediction (Preserved from Commit `9ee860d`):
+> "I predict that when portfolio inputs change, the optimal portfolio weights will adjust based on the relationship between risk and return. If expected returns increase, I expect the portfolio to allocate more capital to those assets. If volatility increases, I expect the allocation to riskier assets to decrease. If liquidity decreases, I expect the investment to become less attractive because it will be harder to sell without additional costs. Overall, I predict that the investment decision will favor assets that provide higher expected returns with manageable risk and sufficient liquidity."
+
+#### 2. Elliot's Scenario-Specific Pre-Execution Predictions (Global Equity Return: 8.00% → 7.50%):
+1. **Allocation:** I predict the portfolio will invest less in global equities if their risk increases, shifting more capital toward safer assets.
+2. **Performance:** I expect the portfolio's net return to decrease slightly, but volatility should also decrease because of the lower exposure to risky equities.
+3. **Decision:** I would be more likely to approve the portfolio if the reduction in volatility improves its overall risk-return balance. Otherwise, I would prefer to wait and review the results before making a final decision.
 
 - **Pre-Run Git Commit Hash:** `[RECORDED_IN_PRE_RUN_COMMIT]`
 - **Pre-Run Timestamp:** `[RECORDED_IN_PRE_RUN_COMMIT]`

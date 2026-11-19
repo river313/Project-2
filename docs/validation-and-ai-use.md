@@ -58,28 +58,16 @@ All core calculations are independently tested via [`run_tests.py`](../run_tests
 
 ### A. Pre-Execution Setup & Prediction (AI-Off, Authored by Elliot Before Running Model)
 
-- **Input Being Changed:**  
-  `[ELLIOT TO FILL OUT — e.g., Global Equity Expected Return / Reserve Liquidity Floor / Equity Ceiling / Correlation]`
+- **Input Being Changed:** Global Equity Expected Return (`expected_return` for Sleeve 4: Global Equity Index Fund)
+- **Original Value (Baseline):** `8.00%` ($0.0800$)
+- **New Value (Stress Test):** `7.50%` ($0.0750$)
+- **Prediction Classification:** General Fiduciary & Qualitative Prediction (not a quantitative prediction for a specific scenario)
 
-- **Original Value (with units):**  
-  `[ELLIOT TO FILL OUT — e.g., 8.00% / 3.00% / 100% / 0.25]`
+- **Elliot's Independent AI-Off Prediction (Verbatim):**
+  > "I predict that when portfolio inputs change, the optimal portfolio weights will adjust based on the relationship between risk and return. If expected returns increase, I expect the portfolio to allocate more capital to those assets. If volatility increases, I expect the allocation to riskier assets to decrease. If liquidity decreases, I expect the investment to become less attractive because it will be harder to sell without additional costs. Overall, I predict that the investment decision will favor assets that provide higher expected returns with manageable risk and sufficient liquidity."
 
-- **New Value (with units):**  
-  `[ELLIOT TO FILL OUT — e.g., 7.50% / 5.00% / 50.0% / 0.50]`
-
-- **My Independent AI-Off Prediction:**  
-  *Write your qualitative and quantitative predictions with AI tools completely closed:*  
-  - *Predicted direction and magnitude of portfolio weights:* `[ELLIOT TO FILL OUT]`  
-  - *Predicted direction of expected return (gross and net):* `[ELLIOT TO FILL OUT]`  
-  - *Predicted direction of portfolio volatility:* `[ELLIOT TO FILL OUT]`  
-  - *Predicted effect on reserve allocation and liquidity:* `[ELLIOT TO FILL OUT]`  
-  - *Predicted effect on investment decision (Adopt / Allocate / Pilot / Reject / Rebalance):* `[ELLIOT TO FILL OUT]`  
-
-- **Git Commit Hash (Pre-Run):**  
-  `[ELLIOT TO FILL OUT — commit hash of this file pushed to GitHub BEFORE running test]`
-
-- **Pre-Run Timestamp:**  
-  `[ELLIOT TO FILL OUT — UTC / Local date and time of commit]`
+- **Pre-Run Git Commit Hash:** `[RECORDED_IN_PRE_RUN_COMMIT]`
+- **Pre-Run Timestamp:** `[RECORDED_IN_PRE_RUN_COMMIT]`
 
 ---
 

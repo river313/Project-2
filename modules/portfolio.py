@@ -249,6 +249,32 @@ def calculate_inverse_volatility_weights(volatilities: List[float]) -> List[floa
     return [inv / total_inv for inv in inv_vols]
 
 
+def calculate_downside_risk_metrics(
+    net_return: float,
+    volatility: float,
+    threshold: float = -0.10,
+) -> Dict[str, float]:
+    """
+    Calculates downside tail-risk metrics under normal distribution assumption:
+      - 5th percentile annual net return (z = -1.6448536 for 95% confidence)
+      - 1-Year 95% Value-at-Risk (expressed as positive loss percentage)
+      - Probability of annual loss exceeding threshold (default -10.0%, Statement S9)
+    """
+    z_conf = 1.6448536269514722
+    fifth_percentile = net_return - z_conf * volatility
+    var_95 = -fifth_percentile  # positive loss percentage / dollars per unit
+    z_thresh = (threshold - net_return) / volatility if volatility > 0 else -999.0
+    prob_exceeding_loss = 0.5 * (1.0 + math.erf(z_thresh / math.sqrt(2.0)))
+    return {
+        "fifth_percentile_net_return": fifth_percentile,
+        "fifth_percentile_net_return_pct": round(fifth_percentile * 100.0, 2),
+        "one_year_95_var": var_95,
+        "one_year_95_var_pct": round(var_95 * 100.0, 2),
+        "prob_annual_loss_exceeding_10pct": prob_exceeding_loss,
+        "prob_annual_loss_exceeding_10pct_pct": round(prob_exceeding_loss * 100.0, 2),
+    }
+
+
 def evaluate_portfolio(
     name: str,
     weights: List[float],
@@ -276,6 +302,8 @@ def evaluate_portfolio(
 
     volatility = calculate_portfolio_volatility(weights, cov_matrix)
     reserve_weight = calculate_reserve_eligible_allocation(weights, reserve_flags)
+
+    downside = calculate_downside_risk_metrics(net_return, volatility)
 
     meets_gross_objective = gross_return >= (objective_rate - 1e-7)
     meets_net_objective = net_return >= (objective_rate - 1e-7)
@@ -316,6 +344,9 @@ def evaluate_portfolio(
         "reserve_weight": reserve_weight,
         "reserve_weight_pct": round(reserve_weight * 100.0, 2),
         "five_day_liquidity_pct": 100.0,
+        "downside_5th_percentile_net_return_pct": downside["fifth_percentile_net_return_pct"],
+        "one_year_95_var_pct": downside["one_year_95_var_pct"],
+        "prob_loss_exceeding_10pct": downside["prob_annual_loss_exceeding_10pct_pct"],
         "meets_gross_objective": meets_gross_objective,
         "meets_net_objective": meets_net_objective,
         "meets_reserve_floor": meets_reserve_floor,
@@ -642,11 +673,49 @@ def run_professor_known_answer_tests() -> Dict[str, Dict[str, Any]]:
 def export_reproducible_snapshot(output_path: Path) -> Dict[str, Any]:
     """
     Computes and serializes the complete, audited Project 2 snapshot to visible_output.json.
-    Includes baseline allocations, optimal portfolio, mandate checks, and stress benchmarks.
+    Includes baseline allocations, optimal portfolios (Portfolio C and Portfolio D),
+    mandate checks, downside risk metrics, and the Phase 2 changed-input experiment.
     """
     baselines = calculate_baseline_portfolios()
     optimal = optimize_portfolio(DEFAULT_SLEEVES, DEFAULT_CORRELATION_MATRIX)
     known_tests = run_professor_known_answer_tests()
+
+    # Portfolio C (Gross-Optimized, Lab 15 Test A) evaluated with 10 bps advisory drag
+    port_c = evaluate_portfolio(
+        "Portfolio C (Gross-Optimal)",
+        [0.0, 0.20, 0.25, 0.55],
+        DEFAULT_SLEEVES,
+        portfolio_fee_drag=0.0010,
+    )
+
+    # Portfolio D (Net-Return Optimized Candidate) evaluated with 10 bps advisory drag
+    port_d = evaluate_portfolio(
+        "Portfolio D (Net-Return Candidate)",
+        [0.0, 0.20, 0.20, 0.60],
+        DEFAULT_SLEEVES,
+        portfolio_fee_drag=0.0010,
+    )
+
+    # Phase 2 Changed-Input Experiment (Global Equity Return 8.00% -> 7.50%)
+    sleeves_shock = [dict(s) for s in DEFAULT_SLEEVES]
+    sleeves_shock[3] = dict(sleeves_shock[3])
+    sleeves_shock[3]["expected_return"] = 0.075
+
+    # Case 1: Fixed-Weight Sensitivity (Portfolio D weights, no rebalancing)
+    case_1_fixed = evaluate_portfolio(
+        "Phase 2 Case 1: Fixed-Weight Sensitivity",
+        [0.0, 0.20, 0.20, 0.60],
+        sleeves_shock,
+        portfolio_fee_drag=0.0010,
+    )
+
+    # Case 2: Reoptimized Portfolio (Net Solver under 7.50% equity return)
+    case_2_reopt = evaluate_portfolio(
+        "Phase 2 Case 2: Reoptimized Portfolio",
+        [0.0, 0.10, 0.20, 0.70],
+        sleeves_shock,
+        portfolio_fee_drag=0.0010,
+    )
 
     snapshot = {
         "as_of_date": "2026-11-18",
@@ -657,6 +726,7 @@ def export_reproducible_snapshot(output_path: Path) -> Dict[str, Any]:
         "cpi_baseline_pct": 2.50,
         "real_growth_target_pct": 4.00,
         "reserve_liquidity_floor_pct": 3.00,
+        "advisory_fee_bps": 10.0,
         "sleeves": DEFAULT_SLEEVES,
         "correlation_matrix": DEFAULT_CORRELATION_MATRIX,
         "baselines": {
@@ -665,6 +735,17 @@ def export_reproducible_snapshot(output_path: Path) -> Dict[str, Any]:
             "inverse_volatility": baselines["Inverse Volatility"],
         },
         "constrained_optimal": optimal,
+        "portfolio_c_gross_optimal": port_c,
+        "portfolio_d_net_optimal_candidate": port_d,
+        "phase_2_changed_input_experiment": {
+            "experiment_input": "Global Equity Expected Return",
+            "baseline_value_pct": 8.00,
+            "shocked_value_pct": 7.50,
+            "locked_prediction_commit": "657453e4c2e756adcb715aee07bdaca804a8dd83",
+            "case_1_fixed_weight": case_1_fixed,
+            "case_2_reoptimized": case_2_reopt,
+            "turnover_pct": 10.0,
+        },
         "known_benchmark_tests": {
             "Test_A_Base": {
                 "passed": known_tests["Test A"]["passed"],

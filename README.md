@@ -73,11 +73,18 @@ Project-2/
 
 ### Portfolio Comparison Summary:
 
-| Portfolio | Weights (Bills / 10-Yr / IG / Eq) | Gross Return | Net Return | Volatility | Reserve Share | Mandate Verdict |
-|---|:---:|---:|---:|---:|:---:|:---:|
-| **Equal Weight** | 25.0% / 25.0% / 25.0% / 25.0% | 5.20% | 5.07% | 5.21% | 50.0% | **FAIL: Return Target (-1.43 pp net)** |
-| **Strategic 60/40 Benchmark** | 0.0% / 0.0% / 40.0% / 60.0% | 6.80% | 6.64% | 10.46% | 0.0% | **FAIL: Reserve Floor (0.0% < 3.0%)** |
-| **Lab 15 Baseline Optimal** | 0.0% / 20.0% / 25.0% / 55.0% | 6.51% | 6.36% | 9.44% | 20.0% | **PASSES HARD RULES; Short on Net** |
-| **Net-Return Candidate** | 0.0% / 20.0% / 20.0% / 60.0% | 6.66% | 6.51% | 10.07% | 20.0% | **PASSES ALL RULES & NET HURDLE** |
+| Portfolio Specification | Weights (Bills / 10-Yr / IG / Eq) | Gross Return | Total Drag | Net Return | Annual Volatility (σ) | Reserve Share | 1-Yr 5th Pct Net Return | Mandate Verdict |
+|---|:---:|---:|---:|---:|---:|---:|---:|:---:|
+| **Equal Weight** | 25.0% / 25.0% / 25.0% / 25.0% | 5.20% | 12.8 bps | 5.07% | 5.21% | 50.0% | -3.50% | **FAIL: Return Target (-1.43 pp net)** |
+| **Strategic 60/40 Benchmark** | 0.0% / 0.0% / 40.0% / 60.0% | 6.80% | 15.8 bps | 6.64% | 10.46% | 0.0% | -10.57% | **FAIL: Reserve Floor (0.0% < 3.0%)** |
+| **Portfolio C (Gross Opt)** | 0.0% / 20.0% / 25.0% / 55.0% | 6.51% | 14.8 bps | 6.36% | 9.44% | 20.0% | -9.17% | **FAIL: Net Hurdle (-14 bps net)** |
+| **Portfolio D (Net Candidate)** | 0.0% / 20.0% / 20.0% / 60.0% | 6.66% | 15.0 bps | 6.51% | 10.07% | 20.0% | -10.05% | **PASSES MANDATE & NET HURDLE** |
 
-*Note on Net-Return Candidate:* Per investment committee guidelines, the Net-Return Optimized portfolio is designated as the primary candidate for further evaluation (not as a guaranteed or unconditionally approved investment).
+*Note on Portfolio D:* Recommended for a **Conditional Pilot Allocation ($20M)** with formal monitoring triggers, rather than an unconditional $100M commitment. Modeled net return (6.51%) clears the 6.50% hurdle by a narrow 1.0 bp margin of safety.
+
+### Phase 2 Changed-Input Experiment (Global Equity Return: 8.00% → 7.50%):
+- **Pre-Execution Locked Commit:** [`657453e`](https://github.com/river313/Project-2/commit/657453e4c2e756adcb715aee07bdaca804a8dd83)
+- **Completed Experiment Commit:** [`010d658`](https://github.com/river313/Project-2/commit/010d658abea60afc35a50fb74803d885b29c9a04)
+- **Case 1 (Fixed-Weight Portfolio D):** Net return drops to **6.21%** (breaches 6.50% hurdle by -29 bps).
+- **Case 2 (Grid-Search Reoptimization):** Shifts to `[0%, 10%, 20%, 70%]`, clearing net return (6.52%) but surging volatility to **11.57%** (+150 bps) and 95% VaR to **-12.51%** (P(Loss > 10%) = 7.66%).
+- **Fiduciary Impact:** Reversal of recommendation—committee rejects automated reoptimization to prevent excessive equity tail risk.

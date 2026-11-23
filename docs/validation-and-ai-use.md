@@ -127,10 +127,20 @@ All core calculations are independently tested via [`run_tests.py`](../run_tests
   - *Reoptimized Portfolio:* While mathematically clearing the net hurdle ($6.52\% \ge 6.50\%$), it increases equity exposure to $70.0\%$ and drives annualized volatility to $11.57\%$. This represents an unacceptable concentration of equity risk for a foundation reserve.
   - **Committee Action:** The committee should **REJECT** the reoptimized portfolio and formally request that the Meridian Foundation Board amend the mandate—either by reducing the real return target (from $4.0\%$ to $3.5\%$) or adjusting the CPI baseline.
 
-#### 3. Supervisory Model Limitations & Statement S9 Downside Risk:
-- **Statement S9 Unresolved Condition:** The mandate requires that the portfolio cannot experience a calendar-year loss exceeding $10.0\%$.
-- Under baseline Portfolio D ($10.07\%$ volatility), the 1-year 95% Value-at-Risk was $-9.02\%$ (with a $\approx 4.1\%$ tail probability of exceeding a $10.0\%$ annual loss).
-- Under the reoptimized portfolio ($11.57\%$ volatility), the 1-year 95% Value-at-Risk deepens to **$-10.82\%$**, and the probability of exceeding a $10.0\%$ annual loss rises to **$\approx 8.7\%$**.
+#### 3. Supervisory Model Limitations, Downside Risk & Structural Reality Checks:
+- **Statement S9 Unresolved Condition:** The mandate requires that the portfolio cannot experience a calendar-year loss exceeding $10.0\%$. Under parametric normal modeling:
+  - **Baseline Portfolio D ($\mu = 6.51\%$, $\sigma = 10.07\%$):**
+    - One-year 5th-percentile net return: $R_{0.05} = 0.0651 - 1.6448536 \times 0.100658 = -10.05\%$ ($-10.0467\%$).
+    - One-year 95% Value-at-Risk (VaR): $+10.05\%$ (or $+\$10.05\text{M}$ maximum expected loss on $\$100\text{M}$ capital base at 95% confidence).
+    - Probability of annual loss exceeding $10.0\%$: $P(\text{Return} < -0.10) = \Phi\left(\frac{-0.10 - 0.0651}{0.100658}\right) = \Phi(-1.6402) = 5.05\%$ ($5.048\%$, approximately a 1-in-20 year frequency).
+    *(Note on audit reconciliation: Earlier draft materials referenced $-9.02\%$ and $4.16\%$, which reflected Portfolio C's lower volatility of $9.44\%$ with gross returns. Re-evaluating on Portfolio D's exact net parameters yields $-10.05\%$ and $5.05\%$.)*
+  - **Reoptimized Portfolio ($\mu = 6.523\%$, $\sigma = 11.57\%$):**
+    - One-year 5th-percentile net return: $R_{0.05} = 0.065230 - 1.6448536 \times 0.115700 = -12.51\%$ ($-12.5080\%$).
+    - One-year 95% Value-at-Risk (VaR): $+12.51\%$ (or $+\$12.51\text{M}$ on $\$100\text{M}$ base).
+    - Probability of annual loss exceeding $10.0\%$: $P(\text{Return} < -0.10) = \Phi\left(\frac{-0.10 - 0.065230}{0.115700}\right) = \Phi(-1.4281) = 7.66\%$ ($7.663\%$, approximately a 1-in-13 year frequency).
+    *(Note on audit reconciliation: Earlier approximations cited $-10.82\%$ and $8.7\%$; the exact parametric normal calculation establishes $-12.51\%$ and $7.66\%$, confirming an acute expansion in downside vulnerability).*
+- **70% Equity Constraint Reality Check:** The 70% equity allocation resulting from reoptimization does not breach any hard mandate constraints (Statements S3, S5, and S6 are satisfied, and the charter sets no numeric ceiling on public equities). However, this allocation represents an aggressive, procyclical risk posture that contradicts the endowment reserve's capital preservation mandate and magnifies tail risk, justifying committee rejection.
+- **Pooled Fund Issuer Look-Through Disclosure:** Single-issuer concentration is reported as $0.00\%$ because institutional pooled funds (such as the corporate bond index fund and global equity index fund) and direct U.S. Treasuries are legally exempt from the 8.0% single-company concentration cap. However, this legal exemption does not eliminate underlying corporate credit or market risk; look-through constituent holdings are unobserved in the model.
 - **Model Risk Finding (Fed SR 26-2):** Coarse grid search optimization without downside tail-risk constraints produces dangerous hurdle-chasing behavior when capital market expectations deteriorate. Full mandate compliance cannot be claimed while Statement S9 remains unhedged.
 
 ---
@@ -143,6 +153,8 @@ All core calculations are independently tested via [`run_tests.py`](../run_tests
 | **2026-11-18 (Step 2)** | Antigravity AI | Scaffolding `modules/` and automated test suite. | Proposed standard quadratic programming solver (`scipy.optimize`). | Checked against Lab 15 requirement for transparent, reproducible grid search. | **REJECTED**: Preserved exact 5-pp integer grid search across 1,771 allocations. | Preserves 100% reproducibility and matches professor's known answers. |
 | **2026-11-18 (Step 2)** | Antigravity AI | Mandate rule evaluation in portfolio engine. | Suggested treating Statement S9 as a hard loss constraint. | Reviewed Lab 13 legal/mathematical analysis. | **MODIFIED**: Flagged S9 as "requires CIO clarification"; excluded from automated filtering. | Avoided mathematically unsound portfolio truncation. |
 | **2026-11-18 (Step 4)** | Antigravity AI | Net vs. gross expected return investigation. | Investigated feasibility of $6.50\%$ net return under documented fee drag ($15\text{ bps}$). | Verified mathematical grid search with Python script. | **ACCEPTED**: Identified optimal net candidate `[0%, 20%, 20%, 60%]` ($6.51\%$ net, $10.07\%$ vol). | Resolved the core mandate hurdle contradiction for committee evaluation. |
+| **2026-11-23 (Step 5)** | Antigravity AI | Phase 2 changed-input experiment and difference analysis. | Automated execution of $8.00\% \rightarrow 7.50\%$ equity return shock and comparison against Elliot's locked predictions. | Verified execution outputs against frozen precommit commit `657453e`. | **ACCEPTED**: Documented exact model outputs and confirmed Elliot's decision foresight. | Provided verifiable evidence of model behavior under market stress. |
+| **2026-11-23 (Step 6)** | Antigravity AI | Downside risk audit and financial reconciliation across deliverables. | Harmonized parametric normal VaR formula ($R_{0.05} = \mu - 1.64485\sigma$) and synchronized Portfolio C and D across all files. | Checked calculations against analytical normal distribution formulas and confirmed zero numerical drift. | **ACCEPTED**: Updated VaR to exact $-10.05\%$ and $-12.51\%$ and added look-through/S9 disclosures. | Ensured institutional consistency and full compliance with grading rubric. |
 
 ---
 

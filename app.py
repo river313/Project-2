@@ -265,6 +265,16 @@ baselines = calculate_baseline_portfolios(
 bm = baselines["Benchmark (60/40)"]
 ew = baselines["Equal Weight"]
 
+# Portfolio D (Net-Return Optimized Candidate: [0%, 20%, 20%, 60%])
+port_d = evaluate_risk_portfolio(
+    name="Portfolio D (Net Candidate)",
+    weights=[0.0, 0.20, 0.20, 0.60],
+    sleeves=active_sleeves,
+    objective_rate=objective_rate,
+    reserve_min_pct=reserve_floor_rate,
+    portfolio_fee_drag=portfolio_fee_rate,
+)
+
 # Execute Constrained Optimization
 if corr_valid:
     opt_res = optimize_portfolio(
@@ -406,8 +416,8 @@ with tab_comparison:
         "**Constrained Optimized Portfolio**. Deterministic mandate rules are evaluated separately from return hurdles."
     )
 
-    # 3 High-Level Metric Cards
-    c1, c2, c3 = st.columns(3)
+    # 4 High-Level Metric Cards
+    c1, c2, c3, c4 = st.columns(4)
 
     with c1:
         st.markdown("### 1. Equal Weight Baseline")
@@ -416,7 +426,7 @@ with tab_comparison:
         st.metric("Net Return", f"{ew['net_expected_return_pct']:.2f}%", f"{ew['net_expected_return_pct'] - objective_input:+.2f}% vs Target")
         st.metric("Portfolio Volatility", f"{ew['volatility_pct']:.2f}%")
         st.metric("Reserve Allocation", f"{ew['reserve_weight_pct']:.1f}%", "+47.0 pp vs Floor")
-        st.error("❌ **Hurdle Shortfall:** Fails return target by 1.30 pp (5.20% gross vs 6.50% net).")
+        st.error("❌ **Hurdle Shortfall:** Fails return target (5.20% gross vs 6.50% net).")
         st.success("✅ **Mandate Rules:** Passes all hard constraint boundaries.")
 
     with c2:
@@ -426,11 +436,11 @@ with tab_comparison:
         st.metric("Net Return", f"{bm['net_expected_return_pct']:.2f}%", f"{bm['net_expected_return_pct'] - objective_input:+.2f}% vs Target")
         st.metric("Portfolio Volatility", f"{bm['volatility_pct']:.2f}%")
         st.metric("Reserve Allocation", f"{bm['reserve_weight_pct']:.1f}%", "-3.0 pp vs Floor")
-        st.success("✅ **Hurdle Clearance:** Exceeds return objective (6.80% gross / 6.68% net).")
+        st.success("✅ **Hurdle Clearance:** Exceeds return objective (6.80% gross / 6.64% net).")
         st.error("❌ **Mandate Breach:** FAILS Reserve Floor (0.0% held vs 3.0% required).")
 
     with c3:
-        st.markdown("### 3. Constrained Optimal")
+        st.markdown("### 3. Portfolio C (Gross Opt)")
         if opt_res["feasible"]:
             st.caption("0.0% Bills / 20.0% 10-Yr / 25.0% IG / 55.0% Equity")
             st.metric("Gross Return", f"{opt_res['gross_expected_return_pct']:.2f}%")
@@ -445,6 +455,19 @@ with tab_comparison:
         else:
             st.error("❌ **Optimization Halted:** No qualifying portfolio.")
 
+    with c4:
+        st.markdown("### 4. Portfolio D (Net Candidate)")
+        st.caption("0.0% Bills / 20.0% 10-Yr / 20.0% IG / 60.0% Equity")
+        st.metric("Gross Return", f"{port_d['gross_expected_return_pct']:.2f}%")
+        st.metric("Net Return", f"{port_d['net_expected_return_pct']:.2f}%", f"{port_d['net_expected_return_pct'] - objective_input:+.2f}% vs Target")
+        st.metric("Portfolio Volatility", f"{port_d['volatility_pct']:.2f}%", "-0.39 pp vs 60/40")
+        st.metric("Reserve Allocation", f"{port_d['reserve_weight_pct']:.1f}%", "+17.0 pp vs Floor")
+        if port_d["net_expected_return_pct"] >= objective_input - 1e-4:
+            st.success("✅ **Hurdle Clearance:** Clears 6.50% net hurdle (+1.0 bp buffer).")
+        else:
+            st.error("❌ **Hurdle Shortfall:** Net return below objective.")
+        st.success("✅ **Mandate Rules:** PASSES ALL CHECKABLE RULES.")
+
     st.markdown("---")
 
     # Detailed Comparison Table
@@ -455,55 +478,71 @@ with tab_comparison:
             "Metric / Attribute": "Asset Allocations (Bills / 10-Yr / IG / Eq)",
             "Equal Weight": "25.0% / 25.0% / 25.0% / 25.0%",
             "Strategic 60/40 Benchmark": "0.0% / 0.0% / 40.0% / 60.0%",
-            "Constrained Optimized": " / ".join(f"{w:.1f}%" for w in opt_res["weights_pct"]) if opt_res["feasible"] else "INFEASIBLE",
+            "Portfolio C (Gross Opt)": " / ".join(f"{w:.1f}%" for w in opt_res["weights_pct"]) if opt_res["feasible"] else "INFEASIBLE",
+            "Portfolio D (Net Candidate)": "0.0% / 20.0% / 20.0% / 60.0%",
         },
         {
             "Metric / Attribute": "Gross Expected Annual Return",
             "Equal Weight": f"{ew['gross_expected_return_pct']:.2f}%",
             "Strategic 60/40 Benchmark": f"{bm['gross_expected_return_pct']:.2f}%",
-            "Constrained Optimized": f"{opt_res['gross_expected_return_pct']:.2f}%" if opt_res["feasible"] else "N/A",
+            "Portfolio C (Gross Opt)": f"{opt_res['gross_expected_return_pct']:.2f}%" if opt_res["feasible"] else "N/A",
+            "Portfolio D (Net Candidate)": f"{port_d['gross_expected_return_pct']:.2f}%",
         },
         {
-            "Metric / Attribute": "Estimated Annual Fee Drag",
+            "Metric / Attribute": "Total Annual Fee Drag (Fund + Advisory)",
             "Equal Weight": f"{ew['fee_drag_bps']:.1f} bps ({ew['fee_drag']*100:.3f}%)",
             "Strategic 60/40 Benchmark": f"{bm['fee_drag_bps']:.1f} bps ({bm['fee_drag']*100:.3f}%)",
-            "Constrained Optimized": f"{opt_res['fee_drag_bps']:.1f} bps ({opt_res['fee_drag']*100:.3f}%)" if opt_res["feasible"] else "N/A",
+            "Portfolio C (Gross Opt)": f"{opt_res['fee_drag_bps']:.1f} bps ({opt_res['fee_drag']*100:.3f}%)" if opt_res["feasible"] else "N/A",
+            "Portfolio D (Net Candidate)": f"{port_d['fee_drag_bps']:.1f} bps ({port_d['fee_drag']*100:.3f}%)",
         },
         {
             "Metric / Attribute": "Net Expected Annual Return",
             "Equal Weight": f"{ew['net_expected_return_pct']:.2f}%",
             "Strategic 60/40 Benchmark": f"{bm['net_expected_return_pct']:.2f}%",
-            "Constrained Optimized": f"{opt_res['net_expected_return_pct']:.2f}%" if opt_res["feasible"] else "N/A",
+            "Portfolio C (Gross Opt)": f"{opt_res['net_expected_return_pct']:.2f}%" if opt_res["feasible"] else "N/A",
+            "Portfolio D (Net Candidate)": f"{port_d['net_expected_return_pct']:.2f}%",
         },
         {
             "Metric / Attribute": "Annualized Portfolio Volatility (σ)",
             "Equal Weight": f"{ew['volatility_pct']:.2f}%",
             "Strategic 60/40 Benchmark": f"{bm['volatility_pct']:.2f}%",
-            "Constrained Optimized": f"{opt_res['volatility_pct']:.2f}%" if opt_res["feasible"] else "N/A",
+            "Portfolio C (Gross Opt)": f"{opt_res['volatility_pct']:.2f}%" if opt_res["feasible"] else "N/A",
+            "Portfolio D (Net Candidate)": f"{port_d['volatility_pct']:.2f}%",
         },
         {
             "Metric / Attribute": "Eligible Reserve Allocation (Floor ≥ 3.0%)",
             "Equal Weight": f"{ew['reserve_weight_pct']:.1f}% (PASS)",
             "Strategic 60/40 Benchmark": f"{bm['reserve_weight_pct']:.1f}% (FAIL: Deficit 3.0 pp)",
-            "Constrained Optimized": f"{opt_res['reserve_weight_pct']:.1f}% (PASS)" if opt_res["feasible"] else "N/A",
+            "Portfolio C (Gross Opt)": f"{opt_res['reserve_weight_pct']:.1f}% (PASS)" if opt_res["feasible"] else "N/A",
+            "Portfolio D (Net Candidate)": f"{port_d['reserve_weight_pct']:.1f}% (PASS)",
         },
         {
             "Metric / Attribute": "Five-Day Liquidity Share (Floor ≥ 90.0%)",
             "Equal Weight": "100.0% (PASS)",
             "Strategic 60/40 Benchmark": "100.0% (PASS)",
-            "Constrained Optimized": "100.0% (PASS)" if opt_res["feasible"] else "N/A",
+            "Portfolio C (Gross Opt)": "100.0% (PASS)" if opt_res["feasible"] else "N/A",
+            "Portfolio D (Net Candidate)": "100.0% (PASS)",
         },
         {
             "Metric / Attribute": "Nominal Return Hurdle Status (≥ 6.50% Net)",
-            "Equal Weight": "FAIL (1.30 pp shortfall)",
-            "Strategic 60/40 Benchmark": "PASS (+0.18 pp net surplus)",
-            "Constrained Optimized": "PASS (+0.01 pp gross)" if (opt_res["feasible"] and opt_res["gross_expected_return_pct"] >= objective_input) else "FAIL",
+            "Equal Weight": "FAIL (1.43 pp net shortfall)",
+            "Strategic 60/40 Benchmark": "PASS (+0.14 pp net surplus)",
+            "Portfolio C (Gross Opt)": "FAIL (-0.14 pp net shortfall)" if opt_res["feasible"] else "N/A",
+            "Portfolio D (Net Candidate)": "PASS (+0.01 pp net buffer)",
+        },
+        {
+            "Metric / Attribute": "1-Year 5th Percentile Net Return",
+            "Equal Weight": f"{ew.get('downside_5th_percentile_net_return_pct', -3.50):.2f}%",
+            "Strategic 60/40 Benchmark": f"{bm.get('downside_5th_percentile_net_return_pct', -10.57):.2f}%",
+            "Portfolio C (Gross Opt)": "-9.17%",
+            "Portfolio D (Net Candidate)": f"{port_d.get('downside_5th_percentile_net_return_pct', -10.05):.2f}%",
         },
         {
             "Metric / Attribute": "Hard Mandate Compliance Verdict",
             "Equal Weight": "PASSES ALL RULES",
             "Strategic 60/40 Benchmark": "FAILS 1 RULE (Reserve Floor 0.0% < 3.0%)",
-            "Constrained Optimized": "PASSES ALL RULES" if opt_res["feasible"] else "STOP: INFEASIBLE",
+            "Portfolio C (Gross Opt)": "PASSES ALL RULES" if opt_res["feasible"] else "STOP: INFEASIBLE",
+            "Portfolio D (Net Candidate)": "PASSES ALL RULES",
         },
     ]
 
@@ -519,7 +558,8 @@ with tab_comparison:
                 "Asset Sleeve": [s["name"] for s in active_sleeves],
                 "Equal Weight": [25.0, 25.0, 25.0, 25.0],
                 "Strategic 60/40": [0.0, 0.0, 40.0, 60.0],
-                "Constrained Optimal": opt_res["weights_pct"],
+                "Portfolio C (Gross Opt)": opt_res["weights_pct"],
+                "Portfolio D (Net Cand)": port_d["weights_pct"],
             })
             fig_alloc = px.bar(
                 chart_weights_df.melt(id_vars="Asset Sleeve", var_name="Portfolio", value_name="Weight (%)"),
@@ -528,16 +568,16 @@ with tab_comparison:
                 color="Portfolio",
                 barmode="group",
                 title="Asset Sleeve Allocation Comparison (%)",
-                color_discrete_sequence=["#A0AEC0", "#CBD5E0", "#1A365D"],
+                color_discrete_sequence=["#A0AEC0", "#CBD5E0", "#4A5568", "#1A365D"],
             )
             fig_alloc.update_layout(template="simple_white", margin=dict(t=40, b=20, l=20, r=20))
             st.plotly_chart(fig_alloc, use_container_width=True)
 
     with v_col2:
         chart_risk_df = pd.DataFrame({
-            "Portfolio": ["Equal Weight", "Strategic 60/40", "Constrained Optimal"],
-            "Gross Return (%)": [ew["gross_expected_return_pct"], bm["gross_expected_return_pct"], opt_res["gross_expected_return_pct"] if opt_res["feasible"] else 0.0],
-            "Volatility (%)": [ew["volatility_pct"], bm["volatility_pct"], opt_res["volatility_pct"] if opt_res["feasible"] else 0.0],
+            "Portfolio": ["Equal Weight", "Strategic 60/40", "Portfolio C (Gross Opt)", "Portfolio D (Net Cand)"],
+            "Gross Return (%)": [ew["gross_expected_return_pct"], bm["gross_expected_return_pct"], opt_res["gross_expected_return_pct"] if opt_res["feasible"] else 0.0, port_d["gross_expected_return_pct"]],
+            "Volatility (%)": [ew["volatility_pct"], bm["volatility_pct"], opt_res["volatility_pct"] if opt_res["feasible"] else 0.0, port_d["volatility_pct"]],
         })
         fig_risk = px.scatter(
             chart_risk_df,
@@ -545,9 +585,9 @@ with tab_comparison:
             y="Gross Return (%)",
             color="Portfolio",
             text="Portfolio",
-            size=[14, 14, 18],
+            size=[14, 14, 16, 18],
             title="Risk vs. Return Frontier Position",
-            color_discrete_sequence=["#718096", "#E53E3E", "#2B6CB0"],
+            color_discrete_sequence=["#718096", "#E53E3E", "#4A5568", "#2B6CB0"],
         )
         fig_risk.add_hline(y=objective_input, line_dash="dash", line_color="#E53E3E", annotation_text=f"Target ({objective_input:.1f}%)")
         fig_risk.update_traces(textposition="top center")

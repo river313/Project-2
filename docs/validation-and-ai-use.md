@@ -9,7 +9,7 @@
 ---
 
 > ### Required Opening Disclosures
-> 1. **AI Use Disclosure:** This validation record documents all AI tools and models utilized during Project 2 development. All mathematical formulations, financial logic, code implementations, and testing protocols were independently reviewed, checked, and verified by Elliot.
+> 1. **AI Use Disclosure:** This validation record documents all AI tools and models utilized during Project 2 development. Code generation, mathematical scaffolding, and preliminary drafting were performed with the assistance of artificial intelligence tools (Google Gemini / Antigravity). Elliot directed the modeling architecture, established the mandate constraints and test cases, independently authored the pre-execution predictions with AI closed, reviewed and verified all executed outputs, and bears ultimate student responsibility for the submitted analysis and decision framework.
 > 2. **Regulatory & Academic Disclaimer:** This analysis is an educational demonstration prepared for FIN 43900 at Purdue University and does not constitute formal investment advice or a professional fiduciary solicitation.
 
 ---
@@ -128,19 +128,21 @@ All core calculations are independently tested via [`run_tests.py`](../run_tests
   - **Committee Action:** The committee should **REJECT** the reoptimized portfolio and formally request that the Meridian Foundation Board amend the mandate—either by reducing the real return target (from $4.0\%$ to $3.5\%$) or adjusting the CPI baseline.
 
 #### 3. Supervisory Model Limitations, Downside Risk & Structural Reality Checks:
-- **Statement S9 Unresolved Condition:** The mandate requires that the portfolio cannot experience a calendar-year loss exceeding $10.0\%$. Under parametric normal modeling:
+- **Statement S9 Unresolved Condition & VaR Quantile Definition:** The mandate requires that the portfolio cannot experience a calendar-year loss exceeding $10.0\%$. Under parametric normal modeling:
+  - **Value-at-Risk Definition:** Value-at-Risk (VaR) is a **modeled loss quantile threshold at a specified confidence level**, **not a ceiling on maximum possible loss**. In tail events beyond the 95th percentile, actual losses can significantly exceed the VaR figure.
   - **Baseline Portfolio D ($\mu = 6.51\%$, $\sigma = 10.07\%$):**
     - One-year 5th-percentile net return: $R_{0.05} = 0.0651 - 1.6448536 \times 0.100658 = -10.05\%$ ($-10.0467\%$).
-    - One-year 95% Value-at-Risk (VaR): $+10.05\%$ (or $+\$10.05\text{M}$ maximum expected loss on $\$100\text{M}$ capital base at 95% confidence).
+    - One-year 95% Value-at-Risk (VaR): $+10.05\%$ (or $+\$10.05\text{M}$ modeled loss quantile threshold per $\$100\text{M}$ base at 95% confidence; not a maximum possible loss).
     - Probability of annual loss exceeding $10.0\%$: $P(\text{Return} < -0.10) = \Phi\left(\frac{-0.10 - 0.0651}{0.100658}\right) = \Phi(-1.6402) = 5.05\%$ ($5.048\%$, approximately a 1-in-20 year frequency).
     *(Note on audit reconciliation: Earlier draft materials referenced $-9.02\%$ and $4.16\%$, which reflected Portfolio C's lower volatility of $9.44\%$ with gross returns. Re-evaluating on Portfolio D's exact net parameters yields $-10.05\%$ and $5.05\%$.)*
   - **Reoptimized Portfolio ($\mu = 6.523\%$, $\sigma = 11.57\%$):**
     - One-year 5th-percentile net return: $R_{0.05} = 0.065230 - 1.6448536 \times 0.115700 = -12.51\%$ ($-12.5080\%$).
-    - One-year 95% Value-at-Risk (VaR): $+12.51\%$ (or $+\$12.51\text{M}$ on $\$100\text{M}$ base).
+    - One-year 95% Value-at-Risk (VaR): $+12.51\%$ (or $+\$12.51\text{M}$ loss quantile threshold on $\$100\text{M}$ base).
     - Probability of annual loss exceeding $10.0\%$: $P(\text{Return} < -0.10) = \Phi\left(\frac{-0.10 - 0.065230}{0.115700}\right) = \Phi(-1.4281) = 7.66\%$ ($7.663\%$, approximately a 1-in-13 year frequency).
     *(Note on audit reconciliation: Earlier approximations cited $-10.82\%$ and $8.7\%$; the exact parametric normal calculation establishes $-12.51\%$ and $7.66\%$, confirming an acute expansion in downside vulnerability).*
 - **70% Equity Constraint Reality Check:** The 70% equity allocation resulting from reoptimization does not breach any hard mandate constraints (Statements S3, S5, and S6 are satisfied, and the charter sets no numeric ceiling on public equities). However, this allocation represents an aggressive, procyclical risk posture that contradicts the endowment reserve's capital preservation mandate and magnifies tail risk, justifying committee rejection.
-- **Pooled Fund Issuer Look-Through Disclosure:** Single-issuer concentration is reported as $0.00\%$ because institutional pooled funds (such as the corporate bond index fund and global equity index fund) and direct U.S. Treasuries are legally exempt from the 8.0% single-company concentration cap. However, this legal exemption does not eliminate underlying corporate credit or market risk; look-through constituent holdings are unobserved in the model.
+- **Pooled Fund Issuer Look-Through Disclosure & Client Mandate Exemption:** Single-issuer concentration is reported as $0.00\%$ because institutional pooled funds (such as the corporate bond index fund and global equity index fund) and direct U.S. Treasuries are exempt from the 8.0% single-company concentration cap under **Statement S6 of the client's internal investment policy mandate**. This is an internal mandate exemption, not an external statutory legal exemption. Underlying corporate credit and market risk among index constituents are unobserved at look-through.
+- **Stress Vector 4 (Historical Observation Window: "All Months" vs. "Last 36 Months"):** Formally reported as **incomplete / not executed**. In strict accordance with course anti-fabrication rules, no synthetic monthly price series or simulated return histories were manufactured. Because authentic historical monthly price CSV data for the four Meridian sleeves was not provided, this stress run was not performed.
 - **Model Risk Finding (Fed SR 26-2):** Coarse grid search optimization without downside tail-risk constraints produces dangerous hurdle-chasing behavior when capital market expectations deteriorate. Full mandate compliance cannot be claimed while Statement S9 remains unhedged.
 
 ---

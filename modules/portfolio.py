@@ -257,7 +257,8 @@ def calculate_downside_risk_metrics(
     """
     Calculates downside tail-risk metrics under normal distribution assumption:
       - 5th percentile annual net return (z = -1.6448536 for 95% confidence)
-      - 1-Year 95% Value-at-Risk (expressed as positive loss percentage)
+      - 1-Year 95% Value-at-Risk (modeled loss quantile threshold at 95% confidence,
+        not a maximum possible loss; expressed as positive percentage)
       - Probability of annual loss exceeding threshold (default -10.0%, Statement S9)
     """
     z_conf = 1.6448536269514722

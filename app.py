@@ -7,9 +7,10 @@ Author / Student: Elliot | Purdue University
 Client / Case Study: Meridian Foundation Reserve ($100.0M Total Portfolio)
 
 Required Disclosures:
-  1. AI Use: Built with AI assistance (Google Gemini / Antigravity). All financial logic,
-     architectural designs, and investment interpretations are the independent work of Elliot.
-  2. Legal Disclaimer: Educational demonstration for FIN 43900. Not investment advice.
+  1. AI Use: Built with AI assistance (Google Gemini / Antigravity) for code generation, mathematical scaffolding,
+     and preliminary text drafting. Elliot directed the architecture, set parameters and constraints, authored
+     pre-execution predictions, verified outputs, and bears ultimate student responsibility for the system.
+  2. Legal Disclaimer: Educational demonstration for FIN 43900 at Purdue University. Not investment advice.
 ================================================================================
 """
 
@@ -466,7 +467,7 @@ with tab_comparison:
             st.success("✅ **Hurdle Clearance:** Clears 6.50% net hurdle (+1.0 bp buffer).")
         else:
             st.error("❌ **Hurdle Shortfall:** Net return below objective.")
-        st.success("✅ **Mandate Rules:** PASSES ALL CHECKABLE RULES.")
+        st.info("ℹ️ **Mandate Rules:** Satisfies evaluated mechanical constraints (S3, S5, S6) & clears net hurdle (S4); Statement S9 unresolved.")
 
     st.markdown("---")
 
@@ -691,11 +692,11 @@ with tab_stress:
             st.session_state["stress_equity_cap"] = equity_cap_input / 100.0
             st.rerun()
 
-        st.markdown("#### Stress Vector 4: Historical Observation Window")
-        st.info(
-            "📁 **Historical Ingestion Notice:** In strict accordance with anti-fabrication standards, "
-            "dual estimation windows ('All Months' vs. 'Last 36 Months') require uploading an authentic monthly 'prices.csv'. "
-            "No synthetic price series or simulated return histories will be displayed."
+        st.markdown("#### Stress Vector 4: Historical Observation Window (Incomplete / Not Executed)")
+        st.warning(
+            "📁 **Stress Vector 4 Status: INCOMPLETE / NOT EXECUTED.** In strict accordance with anti-fabrication standards, "
+            "no synthetic price series or simulated return histories were manufactured. Dual estimation windows "
+            "('All Months' vs. 'Last 36 Months') require authentic monthly prices.csv data, which was not supplied for the Meridian sleeves."
         )
         uploaded_csv = st.file_uploader("Upload authentic prices.csv (Optional)", type=["csv"])
         if uploaded_csv is None:
